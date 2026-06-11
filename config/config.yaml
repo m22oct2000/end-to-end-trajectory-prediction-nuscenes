@@ -1,0 +1,65 @@
+# Model Architecture
+model:
+  name: "MultiModalTransformer"
+  d_model: 256
+  nhead: 8
+  num_encoder_layers: 4
+  num_decoder_layers: 4
+  dim_feedforward: 1024
+  dropout: 0.1
+  max_seq_len: 20
+
+# Encoder specific
+encoders:
+  image:
+    backbone: "resnet50"
+    pretrained: true
+    output_dim: 2048
+  lidar:
+    pointnet_features: 512
+    num_points: 1024
+  trajectory:
+    input_dim: 10
+    hidden_dim: 128
+
+# Data
+data:
+  dataset: "nuscenes"
+  version: "v1.0-mini"
+  root_dir: "./data/nuscenes"
+  sequence_length: 10
+  prediction_horizon: 6
+  frame_skip: 1
+  batch_size: 32
+  num_workers: 8
+
+# Training
+training:
+  epochs: 50
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  scheduler: "cosine"
+  warmup_epochs: 5
+  gradient_clip: 1.0
+  accumulation_steps: 2
+
+# Evaluation
+evaluation:
+  metrics: ["ADE", "FDE", "MR", "EPA"]
+  save_predictions: true
+  visualize_samples: 10
+
+# System
+system:
+  device: "cuda"
+  mixed_precision: true
+  log_interval: 10
+  eval_interval: 5
+  save_interval: 5
+  seed: 42
+
+# Paths
+paths:
+  checkpoints: "./outputs/checkpoints"
+  logs: "./outputs/logs"
+  visualizations: "./outputs/visualizations"
